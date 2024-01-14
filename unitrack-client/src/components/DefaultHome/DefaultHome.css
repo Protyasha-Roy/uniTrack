@@ -1,0 +1,15 @@
+.appName {
+    color: rgb(140, 140, 235);
+}
+
+.headingText{
+    text-align: center;
+    color: rgb(32, 100, 32);
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

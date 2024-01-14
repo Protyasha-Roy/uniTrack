@@ -13,7 +13,8 @@ const LoginForm = () => {
   const onFinish = async (values) => {
     try {
       await axios.post('http://localhost:30000/login', values);
-      localStorage.setItem('userLoggedIn', values.remember);
+      localStorage.setItem('userLoggedIn', true);
+      localStorage.setItem('rememberUser', values.remember);
       setMessage('Login successful!');
       navigate('/');
     } catch (error) {
