@@ -18,7 +18,9 @@ const LoginForm = () => {
       setMessage('Login successful!');
       navigate('/');
     } catch (error) {
-      setMessage(error.response.data.error);
+      if(error.response.data) {
+        setMessage(error.response.data.error);
+      }
     }
   };
   

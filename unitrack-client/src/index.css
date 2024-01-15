@@ -38,6 +38,9 @@ body{
 .w-3{
     width: 300px;
 }
+.w-4{
+    width: 400px;
+}
 .p-10{
     padding: 10px;
 }
@@ -73,4 +76,20 @@ body{
 
 .h-40{
     height: 40px;
+}
+
+.centerDiv {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.spacedDiv{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.m-auto{
+    margin: 0 auto;
 }

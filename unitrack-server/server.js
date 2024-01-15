@@ -27,6 +27,8 @@ app.use(cors());
 
 const database = client.db('unitrack');
 const UsersCollection = database.collection('users');
+const studentsCollection = database.collection('students');
+const attendanceCollection = database.collection('attendance');
 
 async function connectToMongo() {
   try {
@@ -92,6 +94,85 @@ app.post('/login', async (req, res) => {
       console.error('Error during login:', error);
       return res.status(500).json({ error: 'Internal Server Error' });
     }
+  }
+});
+
+app.post('/submitForm', async (req, res) => {
+  const { roll, sessionYear } = req.body;
+
+  try {
+    // Check if student with the same roll and session year already exists
+    const existingStudent = await studentsCollection.findOne({ roll, sessionYear });
+
+    if (existingStudent) {
+      return res.status(400).json({ error: 'Student with this roll and session year already exists.' });
+    }
+
+    // Insert new student data
+    await studentsCollection.insertOne(req.body);
+
+    return res.status(201).json({ message: 'Form submitted successfully!' });
+  } catch (error) {
+    console.error('Error submitting form:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.post('/checkAttendance', async (req, res) => {
+  const { rolls, clubName } = req.body;
+
+  try {
+    // Check attendance against the students database
+    const mismatchedRolls = await Promise.all(
+      rolls.map(async (roll) => {
+        const student = await studentsCollection.findOne({
+          roll,
+          'clubsToJoin': clubName,
+        });
+
+
+        return student ? null : roll;
+      })
+    );
+
+    // Filter out null values (rolls matched) and keep only mismatched rolls
+    const mismatchedRollsFiltered = mismatchedRolls.filter((roll) => roll !== null);
+
+    if (mismatchedRollsFiltered.length === 0) {
+      res.send('Rolls matched');
+    } else {
+      res.json({ mismatchedRolls: mismatchedRollsFiltered });
+    }
+  } catch (error) {
+    console.error('Error checking attendance:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.post('/addToAttendance', async (req, res) => {
+  try {
+    const { rolls, clubName } = req.body;
+
+    // Ensure rolls is an array
+    if (Array.isArray(rolls)) {
+      // Check if any rolls do not exist in the studentsCollection
+      const allStudents = await studentsCollection.find({clubsToJoin: clubName}).toArray();
+      const allRolls = allStudents.map(student => student.roll);
+
+      const absentRolls = allRolls.filter(roll => !rolls.includes(roll));
+      const presentRolls = rolls;
+
+      // Proceed with adding to attendanceCollection
+      const date = new Date();
+      await attendanceCollection.insertOne({ presentRolls, absentRolls, clubName, date });
+
+      return res.status(200).json({ message: 'Added to attendance successfully!' });
+    } else {
+      return res.status(400).json({ error: 'Invalid rolls format' });
+    }
+  } catch (error) {
+    console.error('Error adding to attendance:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
