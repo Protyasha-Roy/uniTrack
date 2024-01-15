@@ -361,10 +361,9 @@ app.get('/allMails', async (req, res) => {
 
 app.delete('/deleteMail/:id', async (req, res) => {
   const mailId = req.params.id;
-  const userEmail = req.query.userEmail; // Assuming the client sends the userEmail in the query parameter
 
   try {
-    const deletedMail = await emailsCollection.findOneAndDelete({ _id: mailId, userEmail });
+    const deletedMail = await emailsCollection.findOneAndDelete({ _id: new ObjectId(mailId) });
     res.json(deletedMail);
   } catch (error) {
     console.error('Error deleting mail:', error);

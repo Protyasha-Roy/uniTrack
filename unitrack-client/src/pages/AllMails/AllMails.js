@@ -9,6 +9,21 @@ const AllMails = () => {
   const [mails, setMails] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const refreshMails = async () => {
+    const userEmail = localStorage.getItem('userEmail');
+
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/allMails`, {
+        params: { userEmail },
+      });
+      setMails(response.data);
+    } catch (error) {
+      console.error('Error fetching mails:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const fetchMails = async () => {
       const userEmail = localStorage.getItem('userEmail');
@@ -32,11 +47,9 @@ const AllMails = () => {
     const userEmail = localStorage.getItem('userEmail');
 
     try {
-      await axios.delete(`${process.env.REACT_APP_API_URL}/deleteMail/${record._id}`, {
-        params: { userEmail },
-      });
+      await axios.delete(`${process.env.REACT_APP_API_URL}/deleteMail/${record._id}`);
 
-      setMails((prevMails) => prevMails.filter((mail) => mail._id !== record._id));
+      refreshMails();
       message.success('Mail deleted successfully!');
     } catch (error) {
       console.error('Error deleting mail:', error);
