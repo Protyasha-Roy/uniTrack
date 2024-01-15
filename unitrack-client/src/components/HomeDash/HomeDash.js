@@ -19,7 +19,7 @@ export default function HomeDash() {
 
     if (userEmail) {
       axios
-        .get(`http://localhost:30000/getUserByEmail?email=${userEmail}`)
+        .get(`${process.env.REACT_APP_API_URL}/getUserByEmail?email=${userEmail}`)
         .then((response) => {
                 setUser(response.data);
                 setLoading(false);
