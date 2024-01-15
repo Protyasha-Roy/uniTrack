@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Input, Button, Select, Form } from 'antd';
+import { Input, Button, Select, Form, message } from 'antd';
 import axios from 'axios';
 import Header from '../../components/Header/Header';
 
@@ -9,9 +9,18 @@ const { Option } = Select;
 const Attendance = () => {
   const [rolls, setRolls] = useState('');
   const [clubName, setClubName] = useState('');
-  const [message, setMessage] = useState('');
+  const [checkingMessage, setCheckingMessage] = useState('');
+  const [isAttendance, setIsAttendace] = useState(null);
 
   const onFinish = async (values) => {
+      if(isAttendance === true) {
+        handleAddToAttendance();
+      } else if(isAttendance === false) {
+        handleCheckRolls(values);
+      }
+  };
+
+  const handleCheckRolls = async (values) => {
     try {
       const response = await axios.post('http://localhost:30000/checkAttendance', {
         rolls: values.rolls.split(',').map((roll) => roll.trim()), // Convert rolls to an array
@@ -19,29 +28,28 @@ const Attendance = () => {
       });
 
       if (response.data === 'Rolls matched') {
-        setMessage('Rolls matched');
+        setCheckingMessage('Rolls matched');
       } else if (Array.isArray(response.data.mismatchedRolls)) {
-        setMessage(`Mismatched rolls: ${response.data.mismatchedRolls.join(', ')}`);
+        setCheckingMessage(`Mismatched rolls: ${response.data.mismatchedRolls.join(', ')}`);
       } else {
-        setMessage('Error checking attendance');
+        setCheckingMessage('Error checking attendance');
       }
     } catch (error) {
-      setMessage('Error checking attendance');
+      setCheckingMessage('Error checking attendance');
       console.error('Error checking attendance:', error);
     }
-  };
+  }
 
   const handleAddToAttendance = async () => {
     try {
-      await axios.post('http://localhost:30000/addToAttendance', {
+      const response = await axios.post('http://localhost:30000/addToAttendance', {
         rolls: rolls.split(',').map((roll) => roll.trim()), // Convert rolls to an array
         clubName,
       });
 
-      setMessage('Added to attendance successfully!');
+      message.success(response.data.message);
     } catch (error) {
-      setMessage('Error adding to attendance');
-      console.error('Error adding to attendance:', error);
+      message.error(error.response.data.error)
     }
   };
 
@@ -61,6 +69,7 @@ const Attendance = () => {
           ]}
         >
           <TextArea
+          rows={5}
             placeholder="Enter rolls separated by commas"
             onChange={(e) => setRolls(e.target.value)}
           />
@@ -87,16 +96,16 @@ const Attendance = () => {
         </Form.Item>
         <Form.Item>
           <div className='flex m-5'>
-            <Button type="primary" htmlType="submit">
+            <Button onClick={() => setIsAttendace(false)} type="primary" htmlType="submit">
               Check Attendance
             </Button>
-            <Button type="primary" onClick={handleAddToAttendance} style={{ marginLeft: '10px' }}>
+            <Button onClick={() => setIsAttendace(true)} type="primary" htmlType='submit' style={{ marginLeft: '10px' }}>
               Add to Attendance
             </Button>
           </div>
         </Form.Item>
       </Form>
-      <p>{message}</p>
+      <p className='textCenter'>{checkingMessage}</p>
     </div>
   );
 };
