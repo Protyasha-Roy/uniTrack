@@ -159,15 +159,21 @@ app.post('/addToAttendance', async (req, res) => {
     // Ensure rolls is an array
     if (Array.isArray(rolls)) {
       // Check if any rolls do not exist in the studentsCollection
-      const allStudents = await studentsCollection.find({clubsToJoin: clubName, userEmail}).toArray();
-      const allRolls = allStudents.map(student => student.roll);
+      const allStudents = await studentsCollection.find({ clubsToJoin: clubName, userEmail }).toArray();
+      const allRolls = allStudents.map((student) => student.roll);
 
-      const absentRolls = allRolls.filter(roll => !rolls.includes(roll));
+      const absentRolls = allRolls.filter((roll) => !rolls.includes(roll));
       const presentRolls = rolls;
 
       // Proceed with adding to attendanceCollection
-      const date = new Date();
-      await attendanceCollection.insertOne({ presentRolls, absentRolls, clubName, date, userEmail });
+      const currentDate = new Date();
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+      const day = String(currentDate.getDate()).padStart(2, '0');
+
+      const formattedDate = `${year}-${month}-${day}`;
+
+      await attendanceCollection.insertOne({ presentRolls, absentRolls, clubName, date: formattedDate, userEmail });
 
       return res.status(200).json({ message: 'Added to attendance successfully!' });
     } else {
@@ -178,6 +184,9 @@ app.post('/addToAttendance', async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+
+
 
 app.post('/sendMail', async (req, res) => {
   const { recipient, subject, messageToSend, userEmail } = req.body;
@@ -313,6 +322,87 @@ app.delete('/deleteStudent/:id', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+app.get('/allAttendance', async (req, res) => {
+  const userEmail = req.query.userEmail;
+  try {
+    const attendanceList = await attendanceCollection.find({userEmail: userEmail}).toArray();
+    res.json(attendanceList);
+  } catch (error) {
+    console.error('Error fetching attendance:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.delete('/deleteAttendance/:id', async (req, res) => {
+  const attendanceId = req.params.id;
+
+  try {
+    const deletedAttendance = await attendanceCollection.findOneAndDelete({ _id: new ObjectId(attendanceId) });
+
+    return res.status(200).json({ message: 'Attendance data deleted!' });
+  } catch (error) {
+    console.error('Error deleting attendance:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get('/allMails', async (req, res) => {
+  const { userEmail } = req.query;
+
+  try {
+    const mails = await emailsCollection.find({ from: userEmail }).toArray();
+    res.json(mails);
+  } catch (error) {
+    console.error('Error fetching mails:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.delete('/deleteMail/:id', async (req, res) => {
+  const mailId = req.params.id;
+  const userEmail = req.query.userEmail; // Assuming the client sends the userEmail in the query parameter
+
+  try {
+    const deletedMail = await emailsCollection.findOneAndDelete({ _id: mailId, userEmail });
+    res.json(deletedMail);
+  } catch (error) {
+    console.error('Error deleting mail:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get('/getStudentById', async (req, res) => {
+  const studentId = req.query.id;
+
+  try {
+    const student = await studentsCollection.find({_id: new ObjectId(studentId)}).toArray();
+    res.json(student);
+  } catch (error) {
+    console.error('Error fetching student details:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.put('/updateStudent', async (req, res) => {
+  const studentId = req.query.id;
+  const updatedStudentData = req.body;
+
+  try {
+    // Exclude _id from the update operation
+    delete updatedStudentData._id;
+
+    await studentsCollection.findOneAndUpdate(
+      { _id: new ObjectId(studentId) },
+      { $set: updatedStudentData }
+    );
+    res.json({ message: 'Student details updated successfully' });
+  } catch (error) {
+    console.error('Error updating student details:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
 
 app.listen(PORT, () => {
