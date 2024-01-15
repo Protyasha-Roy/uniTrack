@@ -15,6 +15,7 @@ const LoginForm = () => {
       await axios.post('http://localhost:30000/login', values);
       localStorage.setItem('userLoggedIn', true);
       localStorage.setItem('rememberUser', values.remember);
+      localStorage.setItem('userEmail', values.email);
       setMessage('Login successful!');
       navigate('/');
     } catch (error) {

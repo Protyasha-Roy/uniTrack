@@ -1,9 +1,10 @@
 const express = require('express');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
+const nodemailer = require("nodemailer");
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ const database = client.db('unitrack');
 const UsersCollection = database.collection('users');
 const studentsCollection = database.collection('students');
 const attendanceCollection = database.collection('attendance');
+const emailsCollection = database.collection('emails');
 
 async function connectToMongo() {
   try {
@@ -119,7 +121,7 @@ app.post('/submitForm', async (req, res) => {
 });
 
 app.post('/checkAttendance', async (req, res) => {
-  const { rolls, clubName } = req.body;
+  const { rolls, clubName, userEmail } = req.body;
 
   try {
     // Check attendance against the students database
@@ -128,6 +130,7 @@ app.post('/checkAttendance', async (req, res) => {
         const student = await studentsCollection.findOne({
           roll,
           'clubsToJoin': clubName,
+          userEmail
         });
 
 
@@ -151,12 +154,12 @@ app.post('/checkAttendance', async (req, res) => {
 
 app.post('/addToAttendance', async (req, res) => {
   try {
-    const { rolls, clubName } = req.body;
+    const { rolls, clubName, userEmail } = req.body;
 
     // Ensure rolls is an array
     if (Array.isArray(rolls)) {
       // Check if any rolls do not exist in the studentsCollection
-      const allStudents = await studentsCollection.find({clubsToJoin: clubName}).toArray();
+      const allStudents = await studentsCollection.find({clubsToJoin: clubName, userEmail}).toArray();
       const allRolls = allStudents.map(student => student.roll);
 
       const absentRolls = allRolls.filter(roll => !rolls.includes(roll));
@@ -164,7 +167,7 @@ app.post('/addToAttendance', async (req, res) => {
 
       // Proceed with adding to attendanceCollection
       const date = new Date();
-      await attendanceCollection.insertOne({ presentRolls, absentRolls, clubName, date });
+      await attendanceCollection.insertOne({ presentRolls, absentRolls, clubName, date, userEmail });
 
       return res.status(200).json({ message: 'Added to attendance successfully!' });
     } else {
@@ -176,6 +179,140 @@ app.post('/addToAttendance', async (req, res) => {
   }
 });
 
+app.post('/sendMail', async (req, res) => {
+  const { recipient, subject, messageToSend, userEmail } = req.body;
+
+  try {
+    let recipients = [];
+
+    if (recipient === 'All Students') {
+      // Get all students' emails
+      const allStudents = await studentsCollection.find({}).toArray();
+      recipients = allStudents.map((student) => student.email);
+    } else {
+      // Get emails based on the club
+      const clubStudents = await studentsCollection.find({ 'clubsToJoin': recipient }).toArray();
+      recipients = clubStudents.map((student) => student.email);
+    }
+
+    // Send email to each recipient
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      secure: true,
+      auth: {
+        user: process.env.SMTP_EMAIL, // replace with your email
+        pass: process.env.SMTP_PASSWORD, // replace with your email password
+      },
+    });
+
+    for (const recipientEmail of recipients) {
+      if(recipientEmail === undefined) {
+        continue;
+      }
+        const mailOptions = {
+          from: userEmail, // replace with your email
+          to: recipientEmail,
+          subject: subject,
+          text: messageToSend,
+        };
+  
+        await transporter.sendMail(mailOptions);
+    }
+
+    const dataToInsert = {
+      recipient: recipient,
+      subject: subject,
+      message: messageToSend,
+      from: userEmail
+    }
+
+    await emailsCollection.insertOne(dataToInsert);
+    res.json({ success: true, message: 'Email sent successfully' });
+  } catch (error) {
+    console.error('Error sending email:', error);
+    res.status(500).json({ success: false, error: 'Error sending email' });
+  }
+});
+
+
+app.get('/getUserByEmail', async (req, res) => {
+  const userEmail = req.query.email;
+
+  try {
+    const user = await UsersCollection.findOne({ email: userEmail });
+
+    if (user) {
+      // Send the user data as a response
+      res.json(user);
+    } else {
+      // If the user is not found, send a 404 status
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching user by email:', error);
+    // Send a 500 status for internal server error
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.put('/updateUser', async (req, res) => {
+  const { email, password, username } = req.body;
+
+  try {
+    const existingUser = await UsersCollection.findOne({ email });
+
+    if (!existingUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Update user data
+    const updateFields = {};
+
+    if (username) {
+      updateFields.username = username;
+    }
+
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateFields.password = hashedPassword;
+    }
+
+    await UsersCollection.findOneAndUpdate({ email }, { $set: updateFields });
+
+    return res.status(200).json({ message: 'User profile updated successfully!' });
+  } catch (error) {
+    console.error('Error during user profile update:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+app.post('/allStudents', async (req, res) => {
+  const { userEmail } = req.body;
+
+  try {
+    const students = await studentsCollection.find({ userEmail: userEmail }).toArray();
+    res.json(students);
+  } catch (error) {
+    console.error('Error fetching students:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.delete('/deleteStudent/:id', async (req, res) => {
+  const studentId = req.params.id;
+
+  try {
+    await studentsCollection.findOneAndDelete({ _id: new ObjectId(studentId) });
+
+    return res.status(200).json({ message: 'Student data deleted!' });
+  } catch (error) {
+    console.error('Error deleting student:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 
 app.listen(PORT, () => {

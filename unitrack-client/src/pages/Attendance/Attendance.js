@@ -22,9 +22,11 @@ const Attendance = () => {
 
   const handleCheckRolls = async (values) => {
     try {
+      const userEmail = localStorage.getItem('userEmail');
       const response = await axios.post('http://localhost:30000/checkAttendance', {
         rolls: values.rolls.split(',').map((roll) => roll.trim()), // Convert rolls to an array
         clubName: values.clubName,
+        userEmail
       });
 
       if (response.data === 'Rolls matched') {
@@ -42,9 +44,11 @@ const Attendance = () => {
 
   const handleAddToAttendance = async () => {
     try {
+      const userEmail = localStorage.getItem('userEmail');
       const response = await axios.post('http://localhost:30000/addToAttendance', {
         rolls: rolls.split(',').map((roll) => roll.trim()), // Convert rolls to an array
         clubName,
+        userEmail
       });
 
       message.success(response.data.message);
@@ -88,10 +92,10 @@ const Attendance = () => {
             placeholder="Select club name"
             onChange={(value) => setClubName(value)}
           >
-            <Option value="scienceClub">Science Club</Option>
-            <Option value="programmingClub">Programming Club</Option>
-            <Option value="languageClub">Language Club</Option>
-            <Option value="debateClub">Debate Club</Option>
+            <Option value="Science Club">Science Club</Option>
+            <Option value="Programming Club">Programming Club</Option>
+            <Option value="Language Club">Language Club</Option>
+            <Option value="Debate Club">Debate Club</Option>
           </Select>
         </Form.Item>
         <Form.Item>

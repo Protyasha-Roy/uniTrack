@@ -9,9 +9,11 @@ const RegistrationForm = () => {
   const [form] = Form.useForm();
 
   const onFinish = async (values) => {
+    const userEmail = localStorage.getItem('userEmail');
+    const dataToSubmit = {...values, userEmail: userEmail};
     try {
       // Make an Axios POST request to submit the form data
-      await axios.post('http://localhost:30000/submitForm', values);
+      await axios.post('http://localhost:30000/submitForm', dataToSubmit);
 
       // Clear form fields after successful submission
       form.resetFields();
@@ -192,10 +194,10 @@ const RegistrationForm = () => {
         name="clubsToJoin"
       >
         <Checkbox.Group>
-          <Checkbox value="scienceClub">Science Club</Checkbox>
-          <Checkbox value="programmingClub">Programming Club</Checkbox>
-          <Checkbox value="debateClub">Debate Club</Checkbox>
-          <Checkbox value="languageClub">Language Club</Checkbox>
+          <Checkbox value="Science Club">Science Club</Checkbox>
+          <Checkbox value="Programming Club">Programming Club</Checkbox>
+          <Checkbox value="Debate Club">Debate Club</Checkbox>
+          <Checkbox value="Language Club">Language Club</Checkbox>
         </Checkbox.Group>
       </Form.Item>
 

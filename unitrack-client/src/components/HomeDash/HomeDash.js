@@ -1,15 +1,50 @@
-import React from 'react'
-import { Button } from 'antd';
+import React, { useEffect, useState } from 'react'
+import { Button, Col, Row, Spin } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import {
    UserOutlined
   } from '@ant-design/icons';
+import axios from 'axios';
 
 export default function HomeDash() {
     const navigate = useNavigate();
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+
+  useEffect(() => {
+    // Fetch user data when the component mounts
+    const userEmail = localStorage.getItem('userEmail');
+
+    if (userEmail) {
+      axios
+        .get(`http://localhost:30000/getUserByEmail?email=${userEmail}`)
+        .then((response) => {
+                setUser(response.data);
+                setLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error fetching user data:', error);
+          setLoading(false);
+        });
+    }
+  }, []);
 
     const handleLogOut = () => {
-        console.log('loged out');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userLoggedIn');
+        localStorage.removeItem('rememberUser');
+        navigate('/home');
+    }
+
+    if (loading) {
+      return (
+        <Row justify="center" align="middle" style={{ minHeight: '100vh' }}>
+          <Col>
+            <Spin size="large" />
+          </Col>
+        </Row>
+      );
     }
 
   return (
@@ -17,9 +52,9 @@ export default function HomeDash() {
         <h2 className='headingText'><span className='appName'>UniTrack</span> - Student Management System</h2>
         <div className='container'>
                 <div className='container pointer'>
-                    <div onClick={() => navigate('/userProfile')} className='border p-5 m-5 container'>
+                    <div onClick={() => navigate(`/userProfile`)} className='border p-5 m-5 container'>
                         <UserOutlined />
-                        <p>Even bigger name, bigger than anything</p>
+                        <p>{user !== null && user.username}</p>
                     </div>
                     <Button className='w-full' onClick={handleLogOut}>Log Out</Button>
                 </div>
