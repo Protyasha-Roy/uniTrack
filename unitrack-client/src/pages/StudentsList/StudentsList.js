@@ -15,7 +15,7 @@ const StudentsList = () => {
     const fetchStudents = async () => {
       const userEmail = localStorage.getItem('userEmail');
       try {
-        const response = await axios.post(`http://localhost:30000/allStudents`, {userEmail});
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}/allStudents`, {userEmail});
         setStudents(response.data);
       } catch (error) {
         console.error('Error fetching students:', error);
@@ -41,7 +41,7 @@ const StudentsList = () => {
     try {
       const id = record._id
       // Delete the student from the database
-      await axios.delete(`http://localhost:30000/deleteStudent/${id}`);
+      await axios.delete(`${process.env.REACT_APP_API_URL}/deleteStudent/${id}`);
       // Remove the deleted student from the state
       setStudents((prevStudents) => prevStudents.filter((student) => student._id !== record._id));
       message.success('Student deleted successfully!');

@@ -11,14 +11,14 @@ const UserProfile = () => {
 
   useEffect(() => {
     const userEmail = localStorage.getItem('userEmail');
-    axios.get(`http://localhost:30000/getUserByEmail?email=${userEmail}`).then((response) => {
+    axios.get(`${process.env.REACT_APP_API_URL}/getUserByEmail?email=${userEmail}`).then((response) => {
       setUserData(response.data);
       setLoading(false);
     });
   }, []);
 
   const onFinish = (values) => {
-    axios.put('http://localhost:30000/updateUser', values).then((response) => {
+    axios.put(`${process.env.REACT_APP_API_URL}/updateUser`, values).then((response) => {
       message.success(response.data.message);
       setEditing(false);
       setUserData(response.data);

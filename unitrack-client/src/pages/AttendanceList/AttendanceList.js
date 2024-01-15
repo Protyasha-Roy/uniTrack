@@ -13,7 +13,7 @@ const AttendanceList = () => {
       const userEmail = localStorage.getItem('userEmail');
       console.log(userEmail)
       try {
-        const response = await axios.get('http://localhost:30000/allAttendance', {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/allAttendance`, {
           params: { userEmail },
         });
         setAttendanceList(response.data);
@@ -29,7 +29,7 @@ const AttendanceList = () => {
 
   const handleDelete = async (record) => {
     try {
-      await axios.delete(`http://localhost:30000/deleteAttendance/${record._id}`);
+      await axios.delete(`${process.env.REACT_APP_API_URL}/deleteAttendance/${record._id}`);
       setAttendanceList((prevAttendance) => prevAttendance.filter((att) => att._id !== record._id));
       message.success('Attendance record deleted successfully!');
     } catch (error) {

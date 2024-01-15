@@ -12,7 +12,7 @@ const LoginForm = () => {
 
   const onFinish = async (values) => {
     try {
-      await axios.post('http://localhost:30000/login', values);
+      await axios.post(`${process.env.API_URL}/login`, values);
       localStorage.setItem('userLoggedIn', true);
       localStorage.setItem('rememberUser', values.remember);
       localStorage.setItem('userEmail', values.email);

@@ -14,11 +14,10 @@ const AllMails = () => {
       const userEmail = localStorage.getItem('userEmail');
 
       try {
-        const response = await axios.get('http://localhost:30000/allMails', {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/allMails`, {
           params: { userEmail },
         });
         setMails(response.data);
-        console.log(response.data)
       } catch (error) {
         console.error('Error fetching mails:', error);
       } finally {
@@ -33,7 +32,7 @@ const AllMails = () => {
     const userEmail = localStorage.getItem('userEmail');
 
     try {
-      await axios.delete(`http://localhost:30000/deleteMail/${record._id}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/deleteMail/${record._id}`, {
         params: { userEmail },
       });
 

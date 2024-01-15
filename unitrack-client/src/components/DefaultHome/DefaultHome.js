@@ -2,6 +2,7 @@ import React from 'react';
 import './DefaultHome.css';
 import { Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import Footer from '../Footer/Footer';
 
 const DefaultHome = () => {
     const navigate = useNavigate();
@@ -24,6 +25,7 @@ const DefaultHome = () => {
                     <Button onClick={() => navigate('/login')}>Go To Login Page</Button>
                 </div>
             </div>
+            <Footer />
         </section>
     )
 }

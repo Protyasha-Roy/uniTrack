@@ -23,7 +23,7 @@ const Attendance = () => {
   const handleCheckRolls = async (values) => {
     try {
       const userEmail = localStorage.getItem('userEmail');
-      const response = await axios.post('http://localhost:30000/checkAttendance', {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/checkAttendance`, {
         rolls: values.rolls.split(',').map((roll) => roll.trim()), // Convert rolls to an array
         clubName: values.clubName,
         userEmail
@@ -45,7 +45,7 @@ const Attendance = () => {
   const handleAddToAttendance = async () => {
     try {
       const userEmail = localStorage.getItem('userEmail');
-      const response = await axios.post('http://localhost:30000/addToAttendance', {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/addToAttendance`, {
         rolls: rolls.split(',').map((roll) => roll.trim()), // Convert rolls to an array
         clubName,
         userEmail

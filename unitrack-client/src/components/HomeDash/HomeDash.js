@@ -5,6 +5,7 @@ import {
    UserOutlined
   } from '@ant-design/icons';
 import axios from 'axios';
+import Footer from '../Footer/Footer';
 
 export default function HomeDash() {
     const navigate = useNavigate();
@@ -73,6 +74,7 @@ export default function HomeDash() {
                     </div>
                 </div>
             </div>
+            <Footer/>
     </section>
   )
 }

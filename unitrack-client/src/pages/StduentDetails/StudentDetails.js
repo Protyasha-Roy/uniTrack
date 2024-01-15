@@ -15,7 +15,7 @@ const StudentDetails = () => {
   const { studentId } = useParams();
 
   useEffect(() => {
-    axios.get(`http://localhost:30000/getStudentById?id=${studentId}`)
+    axios.get(`${process.env.REACT_APP_API_URL}/getStudentById?id=${studentId}`)
       .then((response) => {
           setStudentData(response.data[0]);
       })
@@ -30,7 +30,7 @@ const StudentDetails = () => {
     
     try {
       // Make an Axios PUT request to update the student data
-      await axios.put(`http://localhost:30000/updateStudent?id=${studentData._id}`, updatedStudentData);
+      await axios.put(`${process.env.REACT_APP_API_URL}/updateStudent?id=${studentData._id}`, updatedStudentData);
 
       // Clear form fields after successful update
       form.resetFields();

@@ -13,7 +13,7 @@ const RegistrationForm = () => {
     const dataToSubmit = {...values, userEmail: userEmail};
     try {
       // Make an Axios POST request to submit the form data
-      await axios.post('http://localhost:30000/submitForm', dataToSubmit);
+      await axios.post(`${process.env.REACT_APP_API_URL}/submitForm`, dataToSubmit);
 
       // Clear form fields after successful submission
       form.resetFields();
