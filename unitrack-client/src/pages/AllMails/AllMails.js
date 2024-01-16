@@ -44,7 +44,6 @@ const AllMails = () => {
   }, []);
 
   const handleDelete = async (record) => {
-    const userEmail = localStorage.getItem('userEmail');
 
     try {
       await axios.delete(`${process.env.REACT_APP_API_URL}/deleteMail/${record._id}`);
@@ -67,6 +66,11 @@ const AllMails = () => {
       title: 'From email',
       dataIndex: 'from',
       key: 'from',
+    },
+    {
+      title: 'Send to',
+      dataIndex: 'recipient',
+      key: 'recipient',
     },
     {
       title: 'Message',
