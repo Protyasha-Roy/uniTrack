@@ -9,9 +9,11 @@ const LoginForm = () => {
   const [isRegistered, setIsRegistered] = useState(true);
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onFinish = async (values) => {
     try {
+      setIsSubmitting(true);
       await axios.post(`${process.env.REACT_APP_API_URL}/login`, values);
       localStorage.setItem('userLoggedIn', true);
       localStorage.setItem('rememberUser', values.remember);
@@ -22,6 +24,8 @@ const LoginForm = () => {
       if(error.response.data) {
         setMessage(error.response.data.error);
       }
+    } finally {
+      setIsSubmitting(false); 
     }
   };
   
@@ -87,7 +91,7 @@ const LoginForm = () => {
       <p style={{color: 'red', textAlign: 'center'}}>{message}</p>
 
       <Form.Item>
-        <Button type="primary" htmlType="submit" className="login-form-button">
+        <Button type="primary" htmlType="submit" className="login-form-button" disabled={isSubmitting}>
           {isRegistered ? 'Log in' : 'Sign up'}
         </Button>
         Or <span className='blue-text' onClick={() => setIsRegistered(!isRegistered)}>{isRegistered ? 'register now' : 'login here'}</span>

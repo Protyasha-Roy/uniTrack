@@ -8,6 +8,7 @@ const UserProfile = () => {
   const [userData, setUserData] = useState({});
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const userEmail = localStorage.getItem('userEmail');
@@ -18,10 +19,12 @@ const UserProfile = () => {
   }, []);
 
   const onFinish = (values) => {
+    setIsSubmitting(true);
     axios.put(`${process.env.REACT_APP_API_URL}/updateUser`, values).then((response) => {
       message.success(response.data.message);
       setEditing(false);
       setUserData(response.data);
+      setIsSubmitting(false);
     });
   };
 
@@ -60,7 +63,7 @@ const UserProfile = () => {
         {editing ? (
           <Form.Item>
             <Space>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" disabled={isSubmitting}>
                 Update Profile
               </Button>
               <Button onClick={toggleEditing}>Cancel</Button>

@@ -17,9 +17,11 @@ const SendMultipleMail = () => {
   const [appPass, setAppPass] = useState('');
   const userEmail = localStorage.getItem('userEmail');
   const [form] = Form.useForm();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSendMail = async () => {
     try {
+      setIsSubmitting(true);
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/sendMail`, {
         recipient,
         subject,
@@ -35,6 +37,8 @@ const SendMultipleMail = () => {
       message.success(response.data.message);
     } catch (error) {
       message.error(error.response.data.error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -132,7 +136,7 @@ const SendMultipleMail = () => {
           />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType='submit'>
+          <Button type="primary" htmlType='submit' disabled={isSubmitting}>
             Send Mail
           </Button>
         </Form.Item>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, Input, Select, DatePicker, Button, Checkbox, message } from 'antd';
 import { UserOutlined, PhoneOutlined, MailOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import axios from 'axios';
@@ -7,11 +7,13 @@ const { Option } = Select;
 
 const RegistrationForm = () => {
   const [form] = Form.useForm();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onFinish = async (values) => {
     const userEmail = localStorage.getItem('userEmail');
     const dataToSubmit = {...values, userEmail: userEmail};
     try {
+      setIsSubmitting(true)
       // Make an Axios POST request to submit the form data
       await axios.post(`${process.env.REACT_APP_API_URL}/submitForm`, dataToSubmit);
 
@@ -24,6 +26,8 @@ const RegistrationForm = () => {
       if(error.response) {
         message.error(error.response.data.error);
       }
+    } finally {
+      setIsSubmitting(false); 
     }
   };
 
@@ -203,7 +207,7 @@ const RegistrationForm = () => {
 
       {/* Submit Button */}
       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-        <Button type="primary" htmlType="submit">
+        <Button type="primary" htmlType="submit" disabled={isSubmitting}>
           Submit
         </Button>
       </Form.Item>

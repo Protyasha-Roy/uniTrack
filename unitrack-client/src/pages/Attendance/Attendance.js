@@ -11,6 +11,7 @@ const Attendance = () => {
   const [clubName, setClubName] = useState('');
   const [checkingMessage, setCheckingMessage] = useState('');
   const [isAttendance, setIsAttendace] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onFinish = async (values) => {
       if(isAttendance === true) {
@@ -44,6 +45,7 @@ const Attendance = () => {
 
   const handleAddToAttendance = async () => {
     try {
+      setIsSubmitting(true);
       const userEmail = localStorage.getItem('userEmail');
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/addToAttendance`, {
         rolls: rolls.split(',').map((roll) => roll.trim()), // Convert rolls to an array
@@ -54,6 +56,8 @@ const Attendance = () => {
       message.success(response.data.message);
     } catch (error) {
       message.error(error.response.data.error)
+    } finally{
+      setIsSubmitting(false);
     }
   };
 
@@ -103,7 +107,7 @@ const Attendance = () => {
             <Button onClick={() => setIsAttendace(false)} type="primary" htmlType="submit">
               Check Attendance
             </Button>
-            <Button onClick={() => setIsAttendace(true)} type="primary" htmlType='submit' style={{ marginLeft: '10px' }}>
+            <Button onClick={() => setIsAttendace(true)} type="primary" disabled={isSubmitting} htmlType='submit' style={{ marginLeft: '10px' }}>
               Add to Attendance
             </Button>
           </div>

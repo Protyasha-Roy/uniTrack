@@ -13,6 +13,7 @@ const StudentDetails = () => {
   const [studentData, setStudentData] = useState({});
   const [editing, setEditing] = useState(false);
   const { studentId } = useParams();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     axios.get(`${process.env.REACT_APP_API_URL}/getStudentById?id=${studentId}`)
@@ -29,6 +30,7 @@ const StudentDetails = () => {
     const updatedStudentData = { ...studentData, ...values };
     
     try {
+      setIsSubmitting(true);
       // Make an Axios PUT request to update the student data
       await axios.put(`${process.env.REACT_APP_API_URL}/updateStudent?id=${studentData._id}`, updatedStudentData);
 
@@ -43,6 +45,8 @@ const StudentDetails = () => {
       if (error.response) {
         message.error(error.response.data.error);
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -245,7 +249,7 @@ const StudentDetails = () => {
       <div className='flex gap-10'>
         {editing && (
             <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" disabled={isSubmitting}>
                 Update Details
             </Button>
             </Form.Item>
