@@ -64,6 +64,11 @@ const AllMails = () => {
       key: 'subject',
     },
     {
+      title: 'From email',
+      dataIndex: 'from',
+      key: 'from',
+    },
+    {
       title: 'Message',
       dataIndex: 'message',
       key: 'message',

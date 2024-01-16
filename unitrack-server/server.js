@@ -189,18 +189,18 @@ app.post('/addToAttendance', async (req, res) => {
 
 
 app.post('/sendMail', async (req, res) => {
-  const { recipient, subject, messageToSend, userEmail } = req.body;
+  const { recipient, subject, messageToSend, userEmail, fromEmail, appPass } = req.body;
 
   try {
     let recipients = [];
 
     if (recipient === 'All Students') {
       // Get all students' emails
-      const allStudents = await studentsCollection.find({}).toArray();
+      const allStudents = await studentsCollection.find({userEmail: userEmail}).toArray();
       recipients = allStudents.map((student) => student.email);
     } else {
       // Get emails based on the club
-      const clubStudents = await studentsCollection.find({ 'clubsToJoin': recipient }).toArray();
+      const clubStudents = await studentsCollection.find({ 'clubsToJoin': recipient, userEmail: userEmail }).toArray();
       recipients = clubStudents.map((student) => student.email);
     }
 
@@ -211,8 +211,8 @@ app.post('/sendMail', async (req, res) => {
       port: process.env.SMTP_PORT,
       secure: true,
       auth: {
-        user: process.env.SMTP_EMAIL, // replace with your email
-        pass: process.env.SMTP_PASSWORD, // replace with your email password
+        user: fromEmail, // replace with your email
+        pass: appPass, // replace with your email password
       },
     });
 
@@ -221,7 +221,7 @@ app.post('/sendMail', async (req, res) => {
         continue;
       }
         const mailOptions = {
-          from: userEmail, // replace with your email
+          from: fromEmail, // replace with your email
           to: recipientEmail,
           subject: subject,
           text: messageToSend,
@@ -231,10 +231,11 @@ app.post('/sendMail', async (req, res) => {
     }
 
     const dataToInsert = {
+      userEmail: userEmail,
       recipient: recipient,
       subject: subject,
       message: messageToSend,
-      from: userEmail
+      from: fromEmail
     }
 
     await emailsCollection.insertOne(dataToInsert);
@@ -351,7 +352,7 @@ app.get('/allMails', async (req, res) => {
   const { userEmail } = req.query;
 
   try {
-    const mails = await emailsCollection.find({ from: userEmail }).toArray();
+    const mails = await emailsCollection.find({ userEmail: userEmail }).toArray();
     res.json(mails);
   } catch (error) {
     console.error('Error fetching mails:', error);

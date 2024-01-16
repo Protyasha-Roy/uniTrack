@@ -168,7 +168,7 @@ const StudentDetails = () => {
          <Option value="Islam">Islam</Option>
          <Option value="Hinduism">Hinduism</Option>
          <Option value="Buddhism">Buddhism</Option>
-         <Option value="Christian">Christian</Option>
+         <Option value="Christianity">Christianity</Option>
          <Option value="other">Other</Option>
        </Select>
         ) : (

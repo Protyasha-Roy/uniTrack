@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Input, Button, Select, Form, message } from 'antd';
 import axios from 'axios';
 import Header from '../../components/Header/Header';
+import MailInstruction from '../../components/MailInstruction/MailInstruction';
 
 
 const { TextArea } = Input;
@@ -12,16 +13,20 @@ const SendMultipleMail = () => {
   const [subject, setSubject] = useState('');
   const [messageToSend, setMessageToSend] = useState('');
   const [resultMessage, setResultMessage] = useState('');
+  const [fromEmail, setFromEmail] = useState('');
+  const [appPass, setAppPass] = useState('');
   const userEmail = localStorage.getItem('userEmail');
   const [form] = Form.useForm();
 
   const handleSendMail = async () => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/sendMail`, {
+      const response = await axios.post(`http://localhost:30000/sendMail`, {
         recipient,
         subject,
         messageToSend,
-        userEmail
+        userEmail,
+        fromEmail,
+        appPass
       });
 
       form.resetFields();
@@ -58,6 +63,41 @@ const SendMultipleMail = () => {
             <Option value="Language Club">Language Club</Option>
           </Select>
         </Form.Item>
+        <Form.Item
+          label="From-Email"
+          name="fromEmail"
+          rules={[
+            {
+              required: true,
+              message: 'Please enter from email',
+              whitespace: true,
+            },
+          ]}
+        >
+          <Input
+            placeholder="Enter from email"
+            onChange={(e) => setFromEmail(e.target.value)}
+          />
+        </Form.Item>
+        <Form.Item
+          label="Gmail app-password"
+          name="appPassword"
+          rules={[
+            {
+              required: true,
+              message: 'Please enter the app-password for nodemailer',
+              whitespace: true,
+            },
+          ]}
+        >
+          <Input
+            placeholder="Enter your app-password"
+            onChange={(e) => setAppPass(e.target.value)}
+          />
+        </Form.Item>
+
+        <MailInstruction/>
+
         <Form.Item
           label="Mail Subject"
           name="subject"

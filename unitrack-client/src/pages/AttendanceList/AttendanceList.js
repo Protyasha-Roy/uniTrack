@@ -11,7 +11,6 @@ const AttendanceList = () => {
   useEffect(() => {
     const fetchAttendance = async () => {
       const userEmail = localStorage.getItem('userEmail');
-      console.log(userEmail)
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/allAttendance`, {
           params: { userEmail },
