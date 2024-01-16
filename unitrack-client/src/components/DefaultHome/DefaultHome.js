@@ -17,7 +17,7 @@ const DefaultHome = () => {
                         <li>Add student data.</li>
                         <li>Manage student data.</li>
                         <li>Take Attendance.</li>
-                        <li>Send emails to multiple email addressed at once</li>
+                        <li>Send emails to multiple email addresses at once</li>
                     </ul>
                 </div>
                 <div className='container'>
