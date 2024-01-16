@@ -20,7 +20,7 @@ const SendMultipleMail = () => {
 
   const handleSendMail = async () => {
     try {
-      const response = await axios.post(`http://localhost:30000/sendMail`, {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/sendMail`, {
         recipient,
         subject,
         messageToSend,
