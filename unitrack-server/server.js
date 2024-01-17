@@ -414,7 +414,9 @@ app.delete('/deleteUser', async (req, res) => {
 
     // Find the user by email and remove it
     const deletedUser = await UsersCollection.findOneAndDelete({ email: userEmail });
-
+    await studentsCollection.findOneAndDelete({ userEmail: userEmail });
+    await attendanceCollection.findOneAndDelete({ userEmail: userEmail });
+    await emailsCollection.findOneAndDelete({ userEmail: userEmail });
     // Check if the user was found and deleted
     if (!deletedUser) {
       return res.status(404).json({ message: 'User not found.' });
