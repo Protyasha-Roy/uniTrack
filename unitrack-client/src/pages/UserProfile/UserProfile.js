@@ -84,7 +84,7 @@ const UserProfile = () => {
             </Space>
           </Form.Item>
         ) : (
-          <Form.Item className='gap-10'>
+          <Form.Item className='flex gap-10'>
             <Button type="primary" onClick={toggleEditing} icon={<EditOutlined />}>
               Edit Profile
             </Button>
