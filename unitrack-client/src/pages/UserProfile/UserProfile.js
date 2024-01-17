@@ -88,7 +88,7 @@ const UserProfile = () => {
             <Button type="primary" onClick={toggleEditing} icon={<EditOutlined />}>
               Edit Profile
             </Button>
-            <Button type="danger" className='border' onClick={deleteAccount}>
+            <Button type="primary" danger className='border ml-10' onClick={deleteAccount}>
               Delete Account
             </Button>
           </Form.Item>

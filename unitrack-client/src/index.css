@@ -93,3 +93,7 @@ body{
 .m-auto{
     margin: 0 auto;
 }
+
+.ml-10 {
+    margin-left: 10px;
+}
