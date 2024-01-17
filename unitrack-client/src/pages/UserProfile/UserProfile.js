@@ -76,15 +76,15 @@ const UserProfile = () => {
                 Update Profile
               </Button>
               <Button onClick={toggleEditing}>Cancel</Button>
-              <Button type="danger" onClick={deleteAccount}>
-              Delete Account
-            </Button>
             </Space>
           </Form.Item>
         ) : (
           <Form.Item>
             <Button type="primary" onClick={toggleEditing} icon={<EditOutlined />}>
               Edit Profile
+            </Button>
+            <Button type="danger" onClick={deleteAccount}>
+              Delete Account
             </Button>
           </Form.Item>
         )}
