@@ -45,10 +45,10 @@ async function connectToMongo() {
     throw error;
   }
 }
+const db = await connectToMongo();
 
 app.get('/', async (req, res) => {
   try {
-    const db = await connectToMongo();
     res.send(`Hello, this is your Express server! Message from MongoDB`);
   } catch (error) {
     res.status(500).send('Internal Server Error');
