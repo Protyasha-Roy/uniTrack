@@ -403,6 +403,30 @@ app.put('/updateStudent', async (req, res) => {
   }
 });
 
+app.delete('/deleteUser', async (req, res) => {
+  try {
+    const userEmail = req.query.email;
+
+    // Check if the email parameter is provided
+    if (!userEmail) {
+      return res.status(400).json({ message: 'Email is required for account deletion.' });
+    }
+
+    // Find the user by email and remove it
+    const deletedUser = await UsersCollection.findOneAndDelete({ email: userEmail });
+
+    // Check if the user was found and deleted
+    if (!deletedUser) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Respond with success message
+    return res.json({ message: 'Account successfully deleted.' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error.' });
+  }
+});
 
 
 app.listen(PORT, () => {

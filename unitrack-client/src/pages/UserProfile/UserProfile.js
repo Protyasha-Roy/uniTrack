@@ -28,6 +28,15 @@ const UserProfile = () => {
     });
   };
 
+  const deleteAccount = () => {
+    const userEmail = localStorage.getItem('userEmail');
+    axios.delete(`${process.env.REACT_APP_API_URL}/deleteUser?email=${userEmail}`).then((response) => {
+      // Assuming the server returns a success message
+      message.success(response.data.message);
+      // You might want to clear local storage or perform other actions after deleting the account
+    });
+  };
+
   const toggleEditing = () => {
     setEditing(!editing);
   };
@@ -67,6 +76,9 @@ const UserProfile = () => {
                 Update Profile
               </Button>
               <Button onClick={toggleEditing}>Cancel</Button>
+              <Button type="danger" onClick={deleteAccount}>
+              Delete Account
+            </Button>
             </Space>
           </Form.Item>
         ) : (
