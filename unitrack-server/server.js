@@ -45,7 +45,7 @@ async function connectToMongo() {
     throw error;
   }
 }
-const db = await connectToMongo();
+await connectToMongo();
 
 app.get('/', async (req, res) => {
   try {
