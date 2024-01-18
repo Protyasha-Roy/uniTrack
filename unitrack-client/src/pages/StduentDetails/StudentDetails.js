@@ -37,7 +37,6 @@ const StudentDetails = () => {
       // Make an Axios PUT request to update the student data
       await axios.put(`${process.env.REACT_APP_API_URL}/updateStudent?id=${studentData._id}`, updatedStudentData);
 
-      // Clear form fields after successful update
       form.resetFields();
 
       // Show success message
