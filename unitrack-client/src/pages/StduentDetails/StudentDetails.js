@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, DatePicker, Button, Checkbox, message, Row, Col, Spin } from 'antd';
+import { Form, Input, Select, DatePicker, Button, Checkbox, message } from 'antd';
 import { UserOutlined, PhoneOutlined, MailOutlined, EnvironmentOutlined, EditOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import Header from '../../components/Header/Header';
@@ -13,18 +13,14 @@ const StudentDetails = () => {
   const [studentData, setStudentData] = useState({});
   const [editing, setEditing] = useState(false);
   const { studentId } = useParams();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios.get(`${process.env.REACT_APP_API_URL}/getStudentById?id=${studentId}`)
       .then((response) => {
           setStudentData(response.data[0]);
-          setLoading(false);
       })
       .catch((error) => {
         console.error('Error fetching student details:', error);
-        setLoading(false);
       });
   }, []);
 
@@ -33,10 +29,10 @@ const StudentDetails = () => {
     const updatedStudentData = { ...studentData, ...values };
     
     try {
-      setIsSubmitting(true);
       // Make an Axios PUT request to update the student data
       await axios.put(`${process.env.REACT_APP_API_URL}/updateStudent?id=${studentData._id}`, updatedStudentData);
 
+      // Clear form fields after successful update
       form.resetFields();
 
       // Show success message
@@ -47,8 +43,6 @@ const StudentDetails = () => {
       if (error.response) {
         message.error(error.response.data.error);
       }
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -68,7 +62,6 @@ const StudentDetails = () => {
       facebookLink: studentData.facebookLink || '',
       sessionYear: studentData.sessionYear || '',
       roll: studentData.roll || '',
-      group: studentData.group || '',
       clubsToJoin: studentData.clubsToJoin || [],
     });
   }, [studentData, form]);
@@ -83,17 +76,6 @@ const StudentDetails = () => {
   const toggleEditing = () => {
     setEditing(!editing);
   };
-
-
-  if (loading) {
-    return (
-      <Row justify="center" align="middle" style={{ minHeight: '100vh' }}>
-        <Col>
-          <Spin size="large" />
-        </Col>
-      </Row>
-    );
-  }
 
   return (
     <div className='w-4 m-auto' style={{ marginTop: '50px' }}>
@@ -137,7 +119,7 @@ const StudentDetails = () => {
 
       <Form.Item label="Current Address" name="currentAddress">
         {editing ? (
-          <Input prefix={EnvironmentOutlined} />
+          <Input />
         ) : (
           <span>{studentData.currentAddress}</span>
         )}
@@ -145,7 +127,7 @@ const StudentDetails = () => {
 
       <Form.Item label="Permanent Address" name="permanentAddress">
         {editing ? (
-          <Input prefix={EnvironmentOutlined} />
+          <Input />
         ) : (
           <span>{studentData.permanentAddress}</span>
         )}
@@ -186,7 +168,7 @@ const StudentDetails = () => {
          <Option value="Islam">Islam</Option>
          <Option value="Hinduism">Hinduism</Option>
          <Option value="Buddhism">Buddhism</Option>
-         <Option value="Christianity">Christianity</Option>
+         <Option value="Christian">Christian</Option>
          <Option value="other">Other</Option>
        </Select>
         ) : (
@@ -196,7 +178,7 @@ const StudentDetails = () => {
 
       <Form.Item label="Email" name="email">
         {editing ? (
-          <Input prefix={<MailOutlined />} />
+          <Input prefix={<UserOutlined />} />
         ) : (
           <span>{studentData.email}</span>
         )}
@@ -204,7 +186,7 @@ const StudentDetails = () => {
 
       <Form.Item label="Phone Number" name="phoneNumber">
         {editing ? (
-          <Input prefix={<PhoneOutlined />} />
+          <Input prefix={<UserOutlined />} />
         ) : (
           <span>{studentData.phoneNumber}</span>
         )}
@@ -263,7 +245,7 @@ const StudentDetails = () => {
       <div className='flex gap-10'>
         {editing && (
             <Form.Item>
-            <Button type="primary" htmlType="submit" disabled={isSubmitting}>
+            <Button type="primary" htmlType="submit">
                 Update Details
             </Button>
             </Form.Item>
