@@ -206,10 +206,9 @@ app.post('/sendMail', async (req, res) => {
 
     // Send email to each recipient
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
       host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT,
-      secure: true,
+      secure: false,
       auth: {
         user: fromEmail, // replace with your email
         pass: smtpKey, // replace with your email password
