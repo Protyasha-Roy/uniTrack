@@ -14,14 +14,17 @@ const StudentDetails = () => {
   const [editing, setEditing] = useState(false);
   const { studentId } = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios.get(`${process.env.REACT_APP_API_URL}/getStudentById?id=${studentId}`)
       .then((response) => {
           setStudentData(response.data[0]);
+          setLoading(false);
       })
       .catch((error) => {
         console.error('Error fetching student details:', error);
+        setLoading(false);
       });
   }, []);
 
@@ -80,6 +83,17 @@ const StudentDetails = () => {
   const toggleEditing = () => {
     setEditing(!editing);
   };
+
+
+  if (loading) {
+    return (
+      <Row justify="center" align="middle" style={{ minHeight: '100vh' }}>
+        <Col>
+          <Spin size="large" />
+        </Col>
+      </Row>
+    );
+  }
 
   return (
     <div className='w-4 m-auto' style={{ marginTop: '50px' }}>
