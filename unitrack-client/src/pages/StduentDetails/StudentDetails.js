@@ -5,7 +5,6 @@ import axios from 'axios';
 import Header from '../../components/Header/Header';
 import { useParams } from 'react-router-dom';
 
-
 const { Option } = Select;
 
 const StudentDetails = () => {
