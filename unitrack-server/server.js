@@ -191,8 +191,6 @@ app.post('/addToAttendance', async (req, res) => {
 app.post('/sendMail', async (req, res) => {
   const { recipient, subject, messageToSend, userEmail, fromEmail, smtpKey } = req.body;
 
-  console.log(smtpKey)
-
   try {
     let recipients = [];
 
