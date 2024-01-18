@@ -119,7 +119,7 @@ const StudentDetails = () => {
 
       <Form.Item label="Current Address" name="currentAddress">
         {editing ? (
-          <Input />
+          <Input prefix={<EnvironmentOutlined />} />
         ) : (
           <span>{studentData.currentAddress}</span>
         )}
@@ -127,7 +127,7 @@ const StudentDetails = () => {
 
       <Form.Item label="Permanent Address" name="permanentAddress">
         {editing ? (
-          <Input />
+          <Input prefix={<EnvironmentOutlined />}/>
         ) : (
           <span>{studentData.permanentAddress}</span>
         )}
@@ -178,7 +178,7 @@ const StudentDetails = () => {
 
       <Form.Item label="Email" name="email">
         {editing ? (
-          <Input prefix={<UserOutlined />} />
+          <Input prefix={<MailOutlined />} />
         ) : (
           <span>{studentData.email}</span>
         )}
@@ -186,7 +186,7 @@ const StudentDetails = () => {
 
       <Form.Item label="Phone Number" name="phoneNumber">
         {editing ? (
-          <Input prefix={<UserOutlined />} />
+          <Input prefix={<PhoneOutlined />} />
         ) : (
           <span>{studentData.phoneNumber}</span>
         )}
