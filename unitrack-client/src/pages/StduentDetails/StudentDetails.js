@@ -68,6 +68,7 @@ const StudentDetails = () => {
       facebookLink: studentData.facebookLink || '',
       sessionYear: studentData.sessionYear || '',
       roll: studentData.roll || '',
+      group: studentData.group || '',
       clubsToJoin: studentData.clubsToJoin || [],
     });
   }, [studentData, form]);
