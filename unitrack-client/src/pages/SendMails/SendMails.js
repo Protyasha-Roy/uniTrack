@@ -14,7 +14,7 @@ const SendMultipleMail = () => {
   const [messageToSend, setMessageToSend] = useState('');
   const [resultMessage, setResultMessage] = useState('');
   const [fromEmail, setFromEmail] = useState('');
-  const [appPass, setAppPass] = useState('');
+  const [smtpKey, setSmtpKey] = useState('');
   const userEmail = localStorage.getItem('userEmail');
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,7 +28,7 @@ const SendMultipleMail = () => {
         messageToSend,
         userEmail,
         fromEmail,
-        appPass
+        smtpKey
       });
 
       form.resetFields();
@@ -84,19 +84,19 @@ const SendMultipleMail = () => {
           />
         </Form.Item>
         <Form.Item
-          label="Gmail app-password"
-          name="appPassword"
+          label="Brevo SMTP key"
+          name="smtpKey"
           rules={[
             {
               required: true,
-              message: 'Please enter the app-password for nodemailer',
+              message: 'Please enter the SMTP key from Brevo',
               whitespace: true,
             },
           ]}
         >
           <Input
-            placeholder="Enter your app-password"
-            onChange={(e) => setAppPass(e.target.value)}
+            placeholder="Enter SMTP key from Brevo"
+            onChange={(e) => setSmtpKey(e.target.value)}
           />
         </Form.Item>
 
