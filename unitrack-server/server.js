@@ -189,7 +189,7 @@ app.post('/addToAttendance', async (req, res) => {
 
 
 app.post('/sendMail', async (req, res) => {
-  const { recipient, subject, messageToSend, userEmail, fromEmail, appPass } = req.body;
+  const { recipient, subject, messageToSend, userEmail, fromEmail, smtpKey } = req.body;
 
   try {
     let recipients = [];
@@ -212,7 +212,7 @@ app.post('/sendMail', async (req, res) => {
       secure: true,
       auth: {
         user: fromEmail, // replace with your email
-        pass: appPass, // replace with your email password
+        pass: smtpKey, // replace with your email password
       },
     });
 
