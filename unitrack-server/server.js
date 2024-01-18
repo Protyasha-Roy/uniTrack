@@ -191,6 +191,8 @@ app.post('/addToAttendance', async (req, res) => {
 app.post('/sendMail', async (req, res) => {
   const { recipient, subject, messageToSend, userEmail, fromEmail, smtpKey } = req.body;
 
+  console.log(smtpKey)
+
   try {
     let recipients = [];
 
@@ -210,8 +212,8 @@ app.post('/sendMail', async (req, res) => {
       port: process.env.SMTP_PORT,
       secure: false,
       auth: {
-        user: fromEmail, // replace with your email
-        pass: smtpKey, // replace with your email password
+        user: fromEmail, 
+        pass: smtpKey,
       },
     });
 
@@ -226,7 +228,13 @@ app.post('/sendMail', async (req, res) => {
           text: messageToSend,
         };
   
-        await transporter.sendMail(mailOptions);
+        await transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            console.error('Error sending email:', error);
+          } else {
+            console.log('Email sent:', info.response);
+          }
+        });
     }
 
     const dataToInsert = {
@@ -240,6 +248,7 @@ app.post('/sendMail', async (req, res) => {
     await emailsCollection.insertOne(dataToInsert);
     res.json({ success: true, message: 'Email sent successfully' });
   } catch (error) {
+    console.log(error)
     console.error('Error sending email:', error);
     res.status(500).json({ success: false, error: 'Error sending email' });
   }
