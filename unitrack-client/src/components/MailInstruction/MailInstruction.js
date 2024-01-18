@@ -8,10 +8,9 @@ export default function MailInstruction() {
     <section>
         <Text>To get your app-password:</Text>
         <ul>
-            <li><Text>Turn on gmail account two-factor authentication</Text></li>
-            <li><Text>Go to this page <a target="_blank" href='https://myaccount.google.com/apppasswords'>App Passwords</a></Text></li>
-            <li><Text>Create password for 'nodemailer'</Text></li>
-            <li><Text>Copy the password and paste here. (save it somewhere for later use)</Text></li>
+            <li><Text>Create an account/login in <a target="_blank" href='https://onboarding.brevo.com/account/register'>Brevo</a></Text></li>
+            <li><Text>Go to this page <a target="_blank" href='https://app.brevo.com/settings/keys/smtp'>SMTP & API</a></Text></li>
+            <li><Text>Copy and paste the SMTP key value from 'Your SMTP keys' section</Text></li>
         </ul>
     </section>
   )
